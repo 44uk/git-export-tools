@@ -1,0 +1,8 @@
+copy:
+  archive: zip # or tar, tgz, tar.gz
+  output: ../
+  #format: "EXPORT-%y%m%d_%H%M"
+diff:
+  archive: zip # or tar, tgz, tar.gz
+  output: ../
+  #format: "DIFF-%y%m%d_%H%M"
