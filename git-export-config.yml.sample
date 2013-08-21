@@ -6,3 +6,6 @@ diff:
   archive: zip # or tar, tgz, tar.gz
   output: ../
   #format: "DIFF-%y%m%d_%H%M"
+deleted:
+  output: ../
+  #format: "DELETED-%y%m%d_%H%M"

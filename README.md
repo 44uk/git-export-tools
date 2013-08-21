@@ -29,6 +29,17 @@ Export diff files between {SHA1} and {SHA2}.
 
 
 
+git-export-deleted.rb
+----
+
+Export deleted file list between {SHA1} and {SHA2}.
+
+    $ git-export-deleted.rb {SHA1} {SHA2}
+      -o {/path/to}      # OUTPUT DIRECTORY TARGET
+      -f {format_string} # DIRECTORY NAME WITH FORMAT
+
+
+
 Specification
 ----
 
@@ -54,6 +65,9 @@ use this sample:
       archive: zip # or tar, tgz, tar.gz
       output: ../
       #format: "DIFF-%y%m%d_%H%M"
+    deleted:
+      output: ../
+      #format: "DELETED-%y%m%d_%H%M"
 
 
 
