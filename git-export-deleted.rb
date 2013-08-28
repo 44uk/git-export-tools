@@ -12,6 +12,7 @@
 #
 require "yaml"
 require "optparse"
+require 'shellwords'
 
 root_path = Dir::pwd # get repository fill path without $REPO.
 root_dir  = File.basename(root_path)
@@ -127,7 +128,7 @@ while File.exists?(output + suffix + ext)
   suffix_no = suffix_no + 1
   suffix = suffix_format % [suffix_no]
 end
-output = output + suffix + ".txt"
+output = (output + suffix + ".txt").shellescape
 
 File.open(output, "w") do |f|
   f.puts diff_files
