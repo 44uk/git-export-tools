@@ -71,3 +71,19 @@ use this sample:
 
 
 
+SourceTree for Windows users
+----
+
+Install ruby and git.
+
+1. Install ruby for Windows [RubyInstaller for Windows](http://rubyinstaller.org/)
+2. Install git for Windows [Git for Windows](http://msysgit.github.io/)
+3. Set ruby and git in PATH.
+
+### git-export-diff.rb
+
+1. Set "ruby" to Script to run.
+2. Set "{path/to/script.rb} -a zip $SHA" to Parameters
+
+Unfortunately, *tar* doesn't work well on Windows. So *output* is limited zip format.
+
