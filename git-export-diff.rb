@@ -133,13 +133,14 @@ while File.exists?(output + suffix + ext)
 end
 output = (output + suffix).shellescape
 
-
+# for arguments
+diff_files = diff_files.split("\n").join(" ")
 
 cmd = case options[:archive]
   when /(zip|tar|tar\.gz|tgz)/
-    %[git archive #{sha} --format=#{options[:archive]} --prefix=#{dir}/ -o #{output}.#{options[:archive]} -- `#{diff_cmd}`]
+    %[git archive #{sha} --format=#{options[:archive]} --prefix=#{dir}/ -o #{output}.#{options[:archive]} -- #{diff_files}]
   else
-    %[mkdir -p #{output}; git archive #{sha} -- `#{diff_cmd}` | tar -xC #{output}]
+    %[mkdir -p #{output}; git archive #{sha} -- #{diff_files} | tar -xC #{output}]
 end
 
 puts "cmd\t: " + cmd
