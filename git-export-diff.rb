@@ -14,6 +14,8 @@ require "yaml"
 require "optparse"
 require "shellwords"
 
+# detection windows platform
+windows = (/mswin(?!ce)|mingw|cygwin|bccwin/ === RUBY_PLATFORM)
 root_path = Dir::pwd # get repository fill path without $REPO.
 root_dir  = File.basename(root_path)
 
