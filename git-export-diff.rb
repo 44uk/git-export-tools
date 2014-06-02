@@ -12,7 +12,7 @@
 #
 require "yaml"
 require "optparse"
-require 'shellwords'
+require "shellwords"
 
 root_path = Dir::pwd # get repository fill path without $REPO.
 root_dir  = File.basename(root_path)
@@ -25,7 +25,7 @@ end
 # default options
 options = {
   :archive => nil,
-  :output => File.join(root_path, "..")
+  :output  => File.join(root_path, "..")
 }
 
 # load config if exist
