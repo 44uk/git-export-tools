@@ -16,6 +16,12 @@ require "shellwords"
 
 # detection windows platform
 windows = (/mswin(?!ce)|mingw|cygwin|bccwin/ === RUBY_PLATFORM)
+
+# config file names
+global_config_name = "global-git-export-tool.yml"
+local_config_name  = "git-export-config.yml"
+
+user_path = File.expand_path("~")
 root_path = Dir::pwd # get repository fill path without $REPO.
 root_dir  = File.basename(root_path)
 
@@ -26,32 +32,39 @@ end
 
 # default options
 options = {
-  :archive => nil,
-  :output  => File.join(root_path, "..")
+  "git"     => "git",
+  "tar"     => "/usr/bin/tar",
+  "unzip"   => "/usr/bin/unzip",
+  "archive" => nil,
+  "output"  => File.join(root_path, "..")
 }
 
-# load config if exist
-path_yml = File.join(root_path, "git-export-config.yml")
-global_config = File.exists?(path_yml) ? YAML.load_file(path_yml) : {}
-config = global_config['diff'] # FIXME: be more flexible
+# load global config if exists
+path_global_yml = File.join(user_path, global_config_name)
+global_config   = File.exists?(path_global_yml) ? YAML.load_file(path_global_yml) : {}
 
-# overwrite options by values from yaml
-if config
-  [:archive, :output, :format].each do |k|
-    options[k] = config[k.to_s] if config[k.to_s]
-  end
-end
+# load local config if exist
+path_local_yml  = File.join(root_path, local_config_name)
+local_config    = File.exists?(path_local_yml) ? YAML.load_file(path_local_yml) : {}
+
+# overwrite options by global config
+options.merge!(global_config["env"]  || {})
+options.merge!(global_config["diff"] || {})
+
+# overwrite options by local config
+options.merge!(local_config["env"]  || {})
+options.merge!(local_config["diff"] || {})
 
 # overwrite options by argument options
 OptionParser.new do |opt|
   opt.on('-a VALUE', 'ARCHIVE FORMAT (zip, tar ,tgz, tar.gz)') do |v|
-    options[:archive] = v if /(zip|tar|tgz|tar\.gz)/ === v
+    options["archive"] = v if /(zip|tar|tgz|tar\.gz)/ === v
   end
   opt.on('-o VALUE', 'OUTPUT PATH') do |v|
-    options[:output] = v
+    options["output"] = v
   end
   opt.on('-f VALUE', 'OUTPUT NAME FORMAT (ex. OUTPUT-%y%m%d)') do |v|
-    options[:format] = v
+    options["format"] = v
   end
   opt.parse!(ARGV)
 end
@@ -73,11 +86,11 @@ sha_old = sha + "^" if sha_old === sha
 
 
 
-if options[:format]
-  dir = Time.now.strftime(options[:format])
+if options["format"]
+  dir = Time.now.strftime(options["format"])
 else
   # get tag name or branch name
-  desc = %x[git describe --contains --all #{sha}]
+  desc = %x[#{options["git"]} describe --contains --all #{sha}]
   name = case desc
     when /^tags/
       desc[/tags\/(\w+)\^0/, 1].strip
@@ -90,7 +103,7 @@ else
   dir = "#{root_dir}-#{name}"
 end
 
-output = File.join(options[:output], dir)
+output = File.join(options["output"], dir)
 
 puts "sha\t: "     + "#{sha}"
 puts "sha_old\t: " + "#{sha}"
@@ -107,7 +120,8 @@ end
 
 
 
-diff_cmd = "git diff --stat --diff-filter=ACRM --name-only #{sha_old}..#{sha}"
+# make diff file list
+diff_cmd = "#{options["git"]} diff --stat --diff-filter=ACRM --name-only #{sha_old}..#{sha}"
 diff_files = %x[#{diff_cmd}]
 
 puts "\n"
@@ -127,7 +141,7 @@ end
 suffix_no = 0
 suffix_format = "-%03d"
 suffix = ""
-ext = options[:archive] ? options[:archive] : ""
+ext = options["archive"] ? options["archive"] : ""
 
 while File.exists?(output + suffix + ext)
   suffix_no = suffix_no + 1
@@ -138,11 +152,16 @@ output = (output + suffix).shellescape
 # for arguments
 diff_files = diff_files.split("\n").join(" ")
 
-cmd = case options[:archive]
+cmd = case options["archive"]
   when /(zip|tar|tar\.gz|tgz)/
-    %[git archive #{sha} --format=#{options[:archive]} --prefix=#{dir}/ -o #{output}.#{options[:archive]} -- #{diff_files}]
+    %[#{options["git"]} archive #{sha} --format=#{options["archive"]} --prefix=#{dir}/ -o #{output}.#{options["archive"]} -- #{diff_files}]
   else
-    %[mkdir -p #{output}; git archive #{sha} -- #{diff_files} | tar -xC #{output}]
+    if windows
+      # need unzip command installed if windows
+      %[mkdir "#{output}" & #{options["git"]} archive #{sha} --format=zip -- #{diff_files} | #{options["unzip"]} -xC "#{output}"]
+    else
+      %[mkdir -p #{output}; #{options["git"]} archive #{sha} -- #{diff_files} | #{options["tar"]} -xC #{output}]
+    end
 end
 
 puts "cmd\t: " + cmd

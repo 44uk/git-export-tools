@@ -1,0 +1,15 @@
+#env:
+  #git: /usr/local/bin/git
+  #tar: /usr/bin/tar
+  #zip: /usr/bin/unzip
+#copy:
+  #archive: zip # or tar, tgz, tar.gz
+  #output: ../
+  #format: "EXPORT-%y%m%d_%H%M"
+#diff:
+  #archive: zip # or tar, tgz, tar.gz
+  #output: ../
+  #format: "DIFF-%y%m%d_%H%M"
+#deleted:
+  #output: ../
+  #format: "DELETED-%y%m%d_%H%M"
