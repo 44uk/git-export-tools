@@ -88,7 +88,7 @@ end
 output = File.join(options[:output], dir)
 
 puts "sha\t: "     + "#{sha}"
-puts "sha_old\t: " + "#{sha}"
+puts "sha_old\t: " + "#{sha_old}"
 puts "root\t: "    + "#{root_path}"
 puts "name\t: "    + "#{name}"
 puts "dir\t:  "    + "#{dir}"
