@@ -1,6 +1,8 @@
 Export Tools
 ====
 
+[![Join the chat at https://gitter.im/44uk/git-export-tools](https://badges.gitter.im/44uk/git-export-tools.svg)](https://gitter.im/44uk/git-export-tools?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Export files from git repository.
 
 
